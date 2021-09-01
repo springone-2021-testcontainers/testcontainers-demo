@@ -13,6 +13,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 // the constructor runs.
 // Consider in this case if it is necessary to add cleanup logic to @BeforeEach
 // to ensure subsequent tests have predictable starting conditions.
+// For this non-SpringBootTest, logging is controlled through logback xml file
 
 @Testcontainers
 @Slf4j

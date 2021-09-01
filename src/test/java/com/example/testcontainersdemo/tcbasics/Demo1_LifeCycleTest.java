@@ -9,6 +9,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 // This test helps understand how Testcontainers manages the container lifecycle
 // in relation to the JUnit lifecycle.
+// For this non-SpringBootTest, logging is controlled through logback xml file
 
 @Testcontainers
 @Slf4j
