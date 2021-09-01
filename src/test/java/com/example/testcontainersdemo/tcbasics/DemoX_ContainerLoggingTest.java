@@ -24,25 +24,25 @@ public class DemoX_ContainerLoggingTest {
 
     public DemoX_ContainerLoggingTest() {
 
-        log.info("{} In Constructor. Instance: {}\n", Constants.EYE_CATCHER, this);
+        log.info("{} In Constructor\nClass instance: {}\n", Constants.EYE_CATCHER, this);
     }
 
     @BeforeAll
     public static void beforeAllMethod() {
 
-        log.info("{} In @BeforeAll. Instance: {}\n", Constants.EYE_CATCHER, "<static method>");
+        log.info("{}In @BeforeAll\nStatic method\n", Constants.EYE_CATCHER);
     }
 
     @AfterAll
     public static void afterAllMethod() {
 
-        log.info("{} In @AfterAll. Instance: {}\n", Constants.EYE_CATCHER, "<static method>");
+        log.info("{}In @AfterAll\nStatic method\n", Constants.EYE_CATCHER);
     }
 
     @Test
     public void test1() {
 
-        log.info("{} In @Test 1. Instance: {}\n", Constants.EYE_CATCHER, this);
+        log.info("{}In @Test 1\nClass instance: {}\n", Constants.EYE_CATCHER, this);
 
         String url = "http://" + container.getHost() + ":" + container.getFirstMappedPort();
         ResponseEntity<String> response
@@ -54,7 +54,7 @@ public class DemoX_ContainerLoggingTest {
     @Test
     public void test2() {
 
-        log.info("{} In @Test 2. Instance: {}\n", Constants.EYE_CATCHER, this);
+        log.info("{}In @Test 2\nClass instance: {}\n", Constants.EYE_CATCHER, this);
 
         String url = "http://" + container.getHost() + ":" + container.getFirstMappedPort();
         log.info("URL: {}", url);
@@ -66,13 +66,13 @@ public class DemoX_ContainerLoggingTest {
     @BeforeEach
     public void beforeEachMethod() {
 
-        log.info("{} In @BeforeEach. Instance: {}\n", Constants.EYE_CATCHER, this);
+        log.info("{}In @BeforeEach\nClass instance: {}\nContainer id: {}\n", Constants.EYE_CATCHER, this, container.getContainerId());
     }
 
     @AfterEach
     public void afterEachMethod() {
 
-        log.info("{} In @AfterEach. Instance: {}\n", Constants.EYE_CATCHER, this);
+        log.info("{}In @AfterEach\nClass instance: {}\n", Constants.EYE_CATCHER, this);
 
         // Get all container logs to since container start to now
         log.info("{} Container logs:\n{}", Constants.EYE_CATCHER, container.getLogs());

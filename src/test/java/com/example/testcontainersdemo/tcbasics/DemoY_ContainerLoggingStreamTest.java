@@ -25,25 +25,25 @@ public class DemoY_ContainerLoggingStreamTest {
 
     public DemoY_ContainerLoggingStreamTest() {
 
-        log.info("{} In Constructor. Instance: {}\n", Constants.EYE_CATCHER, this);
+        log.info("{} In Constructor\nClass instance: {}\n", Constants.EYE_CATCHER, this);
     }
 
     @BeforeAll
     public static void beforeAllMethod() {
 
-        log.info("{} In @BeforeAll. Instance: {}\n", Constants.EYE_CATCHER, "<static method>");
+        log.info("{}In @BeforeAll\nStatic method\n", Constants.EYE_CATCHER);
     }
 
     @AfterAll
     public static void afterAllMethod() {
 
-        log.info("{} In @AfterAll. Instance: {}\n", Constants.EYE_CATCHER, "<static method>");
+        log.info("{}In @AfterAll\nStatic method\n", Constants.EYE_CATCHER);
     }
 
     @Test
     public void test1() {
 
-        log.info("{} In @Test 1. Instance: {}\n", Constants.EYE_CATCHER, this);
+        log.info("{}In @Test 1\nClass instance: {}\n", Constants.EYE_CATCHER, this);
 
         String url = "http://" + container.getHost() + ":" + container.getFirstMappedPort();
         ResponseEntity<String> response
@@ -55,7 +55,7 @@ public class DemoY_ContainerLoggingStreamTest {
     @Test
     public void test2() {
 
-        log.info("{} In @Test 2. Instance: {}\n", Constants.EYE_CATCHER, this);
+        log.info("{}In @Test 2\nClass instance: {}\n", Constants.EYE_CATCHER, this);
 
         String url = "http://" + container.getHost() + ":" + container.getFirstMappedPort();
         log.info("URL: {}", url);
@@ -67,7 +67,7 @@ public class DemoY_ContainerLoggingStreamTest {
     @BeforeEach
     public void beforeEachMethod() {
 
-        log.info("{} In @BeforeEach. Instance: {}\n", Constants.EYE_CATCHER, this);
+        log.info("{}In @BeforeEach\nClass instance: {}\nContainer id: {}\n", Constants.EYE_CATCHER, this, container.getContainerId());
 
         // Create seperate SLF4J logger instance to pass to the consumer?
         Slf4jLogConsumer logConsumer = new Slf4jLogConsumer(log).withSeparateOutputStreams();
@@ -77,7 +77,7 @@ public class DemoY_ContainerLoggingStreamTest {
     @AfterEach
     public void afterEachMethod() {
 
-        log.info("{} In @AfterEach. Instance: {}\n", Constants.EYE_CATCHER, this);
+        log.info("{}In @AfterEach\nClass instance: {}\n", Constants.EYE_CATCHER, this);
     }
 }
 

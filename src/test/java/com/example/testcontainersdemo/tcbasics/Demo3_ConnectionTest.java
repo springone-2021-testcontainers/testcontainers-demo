@@ -24,32 +24,33 @@ public class Demo3_ConnectionTest {
     RestTemplate restTemplate = new RestTemplate();
 
     @Container
-    GenericContainer container = new GenericContainer(Constants.HTTPBIN_IMAGE)
+    static GenericContainer container = new GenericContainer(Constants.HTTPBIN_IMAGE)
             .withExposedPorts(80);
 
     public Demo3_ConnectionTest() {
 
-        log.info("{} In Constructor. Instance: {}\n", Constants.EYE_CATCHER, this);
+        log.info("{} In Constructor. Class Class instance: {}\n", Constants.EYE_CATCHER, this);
     }
 
     @BeforeAll
     public static void beforeAllMethod() {
 
-        log.info("{} In @BeforeAll. Instance: {}\n", Constants.EYE_CATCHER, "<static method>");
+        log.info("{}In @BeforeAll. Class Class instance: {}\n", Constants.EYE_CATCHER, "<static method>");
     }
 
     @AfterAll
     public static void afterAllMethod() {
 
-        log.info("{} In @AfterAll. Instance: {}\n", Constants.EYE_CATCHER, "<static method>");
+        log.info("{}In @AfterAll\nStatic method\n", Constants.EYE_CATCHER);
     }
 
     @Test
     public void test1() {
 
-        log.info("{} In @Test 1. Instance: {}\n", Constants.EYE_CATCHER, this);
+        log.info("{}In @Test 1\nClass instance: {}\n", Constants.EYE_CATCHER, this);
 
         String url = "http://localhost:80";
+        log.info("URL: {}", url);
         ResponseEntity<String> response
                 = restTemplate.getForEntity(url + "/uuid", String.class);
         Assertions.assertEquals(response.getStatusCode(), HttpStatus.OK, () -> "This is not okay.");
@@ -58,7 +59,7 @@ public class Demo3_ConnectionTest {
     @Test
     public void test2() {
 
-        log.info("{} In @Test 2. Instance: {}\n", Constants.EYE_CATCHER, this);
+        log.info("{}In @Test 2\nClass instance: {}\n", Constants.EYE_CATCHER, this);
 
         String url = "http://" + container.getHost() + ":" + container.getFirstMappedPort();
         log.info("URL: {}", url);
@@ -70,13 +71,13 @@ public class Demo3_ConnectionTest {
     @BeforeEach
     public void beforeEachMethod() {
 
-        log.info("{} In @BeforeEach. Instance: {}\n", Constants.EYE_CATCHER, this);
+        log.info("{}In @BeforeEach\nClass instance: {}\nContainer id: {}\n", Constants.EYE_CATCHER, this, container.getContainerId());
     }
 
     @AfterEach
     public void afterEachMethod() {
 
-        log.info("{} In @AfterEach. Instance: {}\n", Constants.EYE_CATCHER, this);
+        log.info("{}In @AfterEach\nClass instance: {}\n", Constants.EYE_CATCHER, this);
     }
 }
 
