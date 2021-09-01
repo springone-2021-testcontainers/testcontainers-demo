@@ -13,8 +13,8 @@ public class Constants {
     // docker run -p 80:80 kennethreitz/httpbin
     public static final DockerImageName HTTPBIN_IMAGE = DockerImageName.parse("kennethreitz/httpbin:latest");
 
-    // This directory should contain a clone of http://github.com/ciberkleid/go-sample-app
-    // docker run -p 8080:8080 -e environment=DEV hello-server
-    public static final Path HELLO_SERVER_SOURCE = Paths.get("temp/hello-server");
+    // The specified directory should contain a clone of https://github.com/testcontainers/helloworld
+    // docker run -p 8080:8080 -p 8081:8081 -e DELAY_START_MSEC=2000 testcontainers/helloworld
+    public static final Path HELLOWORLD_SOURCE = Paths.get("temp/helloworld");
 
 }
