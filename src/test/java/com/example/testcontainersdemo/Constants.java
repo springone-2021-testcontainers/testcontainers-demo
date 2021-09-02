@@ -13,8 +13,15 @@ public class Constants {
     // docker run -p 80:80 kennethreitz/httpbin
     public static final DockerImageName HTTPBIN_IMAGE = DockerImageName.parse("kennethreitz/httpbin:latest");
 
+    // Lightweight container
+    // Tip: use same version as in https://github.com/testcontainers/helloworld/blob/main/Dockerfile
+    //      to avoid downloading a new image
+    public static final DockerImageName ALPINE_IMAGE = DockerImageName.parse("alpine:3.12");
+
     // The specified directory should contain a clone of https://github.com/testcontainers/helloworld
     // docker run -p 8080:8080 -p 8081:8081 -e DELAY_START_MSEC=2000 testcontainers/helloworld
     public static final Path HELLOWORLD_SOURCE = Paths.get("temp/helloworld");
+
+
 
 }

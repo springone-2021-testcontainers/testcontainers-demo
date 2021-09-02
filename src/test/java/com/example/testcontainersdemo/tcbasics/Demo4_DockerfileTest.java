@@ -4,7 +4,9 @@ import com.example.testcontainersdemo.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import org.testcontainers.containers.GenericContainer;
@@ -12,6 +14,15 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.images.builder.ImageFromDockerfile;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Iterator;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 // This test dynamically builds a container from a Dockerfile.
 // This is useful, for example, if the system under test is the image itself,
@@ -35,7 +46,7 @@ public class Demo4_DockerfileTest {
     // Can also use waiting strategies to make sure container is ready
     // e.g. based on HTTP response, or certain log output, etc...
     @Container
-    public GenericContainer container = new GenericContainer(
+    public static GenericContainer container = new GenericContainer(
 //            new ImageFromDockerfile()
             new ImageFromDockerfile("testcontainers/helloworld", false)
                     .withFileFromPath(".", Constants.HELLOWORLD_SOURCE)
@@ -44,63 +55,39 @@ public class Demo4_DockerfileTest {
             .withExposedPorts(8080, 8081)
             .waitingFor(Wait.forHttp("/"));
 
-    public Demo4_DockerfileTest() {
-
-        log.info("{} In Constructor\nClass instance: {}\n", Constants.EYE_CATCHER, this);
-    }
-
-    @BeforeAll
-    public static void beforeAllMethod() {
-
-        log.info("{}In @BeforeAll\nStatic method\n", Constants.EYE_CATCHER);
-
-        log.info("Source path for docker build: {}", Constants.HELLOWORLD_SOURCE.toAbsolutePath());
-    }
-
-    @AfterAll
-    public static void afterAllMethod() {
-
-        log.info("{}In @AfterAll\nStatic method\n", Constants.EYE_CATCHER);
-    }
-
-    @DisplayName("test1() send /uuid")
     @Test
+    @DisplayName("get_ping_from_port1")
     public void test1() {
 
-        log.info("{}In @Test 1\nClass instance: {}\n", Constants.EYE_CATCHER, this);
-
-        String url = "http://" + container.getHost() + ":" + container.getFirstMappedPort();
-        log.info("URL: {}", url);
+        String url = "http://" + container.getHost()
+                + ":"
+                + container.getFirstMappedPort()
+                + "/ping";
+        log.info("Request: GET {}", url);
         ResponseEntity<String> response
-                = restTemplate.getForEntity(url + "/uuid", String.class);
-        log.info("Response is:\n\n{}\n", response);
+                = restTemplate.getForEntity(url, String.class);
+        log.info("Response: {}", response.getBody());
         Assertions.assertEquals(response.getStatusCode(), HttpStatus.OK, () -> "This is not okay.");
     }
 
-    @DisplayName("test1() send /ping")
     @Test
+    @DisplayName("get_uuid_from_port2")
     public void test2() {
 
-        log.info("{}In @Test 2\nClass instance: {}\n", Constants.EYE_CATCHER, this);
-
-        String url = "http://" + container.getHost() + ":" + container.getMappedPort(8081);
-        log.info("URL: {}", url);
+        String url = "http://" + container.getHost()
+                + ":"
+                + container.getMappedPort(8081)
+                + "/uuid";
+        log.info("Request: GET {}", url);
         ResponseEntity<String> response
-                = restTemplate.getForEntity(url + "/ping", String.class);
-        log.info("Response is:\n\n{}\n", response);
+                = restTemplate.getForEntity(url, String.class);
+        log.info("Response: {}", response.getBody());
         Assertions.assertEquals(response.getStatusCode(), HttpStatus.OK, () -> "This is not okay.");
     }
 
     @BeforeEach
-    public void beforeEachMethod() {
+    public void beforeEachMethod(TestInfo testInfo) {
 
-        log.info("{}In @BeforeEach\nClass instance: {}\nContainer id: {}\n", Constants.EYE_CATCHER, this, container.getContainerId());
-    }
-
-    @AfterEach
-    public void afterEachMethod() {
-
-        log.info("{}In @AfterEach\nClass instance: {}\n", Constants.EYE_CATCHER, this);
+        log.info("{}Test: {}\nClass instance: {}\nContainer id: {}\n", Constants.EYE_CATCHER, testInfo.getDisplayName(), this, container.getContainerId());
     }
 }
-
