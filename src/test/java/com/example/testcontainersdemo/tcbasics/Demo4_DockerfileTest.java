@@ -46,7 +46,7 @@ public class Demo4_DockerfileTest {
     // Can also use waiting strategies to make sure container is ready
     // e.g. based on HTTP response, or certain log output, etc...
     @Container
-    public GenericContainer container = new GenericContainer(
+    public static GenericContainer container = new GenericContainer(
 //            new ImageFromDockerfile()
             new ImageFromDockerfile("testcontainers/helloworld", false)
                     .withFileFromPath(".", Constants.HELLOWORLD_SOURCE)
@@ -56,14 +56,14 @@ public class Demo4_DockerfileTest {
             .waitingFor(Wait.forHttp("/"));
 
     @Test
-    @DisplayName("get_uuid")
+    @DisplayName("get_ping_from_port1")
     public void test1() {
 
         String url = "http://" + container.getHost()
                 + ":"
                 + container.getFirstMappedPort()
-                + "/uuid";
-        log.info("Request: {}", url);
+                + "/ping";
+        log.info("Request: GET {}", url);
         ResponseEntity<String> response
                 = restTemplate.getForEntity(url, String.class);
         log.info("Response: {}", response.getBody());
@@ -71,14 +71,14 @@ public class Demo4_DockerfileTest {
     }
 
     @Test
-    @DisplayName("get_ping")
+    @DisplayName("get_uuid_from_port2")
     public void test2() {
 
         String url = "http://" + container.getHost()
                 + ":"
                 + container.getMappedPort(8081)
-                + "/ping";
-        log.info("Request: {}", url);
+                + "/uuid";
+        log.info("Request: GET {}", url);
         ResponseEntity<String> response
                 = restTemplate.getForEntity(url, String.class);
         log.info("Response: {}", response.getBody());
