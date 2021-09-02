@@ -2,83 +2,54 @@ package com.example.testcontainersdemo.tcbasics;
 
 import com.example.testcontainersdemo.Constants;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.containers.startupcheck.OneShotStartupCheckStrategy;
 import org.testcontainers.junit.jupiter.Testcontainers;
+
+import static org.testcontainers.containers.output.OutputFrame.OutputType.STDERR;
+import static org.testcontainers.containers.output.OutputFrame.OutputType.STDOUT;
+
+// This test shows how to access container logs (all or stdout/stderr separately).
+// Streaming logs is also possible (see https://www.testcontainers.org/features/container_logs)
+
+// This test also illustrates:
+//   - Manual control of container create/start
+//   - Setting/getting runtime environment variables
+//   - Setting container start comman
 
 @Testcontainers
 @Slf4j
 @SpringBootTest
-public class DemoX_ContainerLoggingTest {
+public class Demo5_ContainerLoggingTest {
 
-    RestTemplate restTemplate = new RestTemplate();
-
-    @Container
-    GenericContainer container = new GenericContainer(Constants.HTTPBIN_IMAGE)
-            .withExposedPorts(80);
-
-    public DemoX_ContainerLoggingTest() {
-
-        log.info("{} In Constructor\nClass instance: {}\n", Constants.EYE_CATCHER, this);
-    }
-
-    @BeforeAll
-    public static void beforeAllMethod() {
-
-        log.info("{}In @BeforeAll\nStatic method\n", Constants.EYE_CATCHER);
-    }
-
-    @AfterAll
-    public static void afterAllMethod() {
-
-        log.info("{}In @AfterAll\nStatic method\n", Constants.EYE_CATCHER);
+    private static GenericContainer<?> shortLivedContainer() {
+        return new GenericContainer<>(Constants.ALPINE_IMAGE)
+                .withEnv("GREETING", "Hello, world!")
+                .withCommand("/bin/sh", "-c",
+                        "echo -e \">> Starting up with GREETING=$GREETING\" && " +
+                        "echo -e \">> Oops! Something went wrong\" 1>&2")
+                .withStartupCheckStrategy(new OneShotStartupCheckStrategy());
     }
 
     @Test
+    @DisplayName("get_logs")
     public void test1() {
+        try (GenericContainer<?> container = shortLivedContainer()) {
+            container.start();
 
-        log.info("{}In @Test 1\nClass instance: {}\n", Constants.EYE_CATCHER, this);
+            log.info("Container logs (all):\n{}", container.getLogs());
 
-        String url = "http://" + container.getHost() + ":" + container.getFirstMappedPort();
-        ResponseEntity<String> response
-                = restTemplate.getForEntity(url + "/uuid", String.class);
-        Assertions.assertEquals(response.getStatusCode(), HttpStatus.OK, () -> "This is not okay.");
-    }
+            log.info("Container logs (stdout only):\n{}", container.getLogs(STDOUT));
 
-    @Disabled
-    @Test
-    public void test2() {
+            log.error("Container logs (stderr only):\n{}", container.getLogs(STDERR));
 
-        log.info("{}In @Test 2\nClass instance: {}\n", Constants.EYE_CATCHER, this);
+            Assertions.assertTrue(container.getEnvMap().get("GREETING").equalsIgnoreCase("Hello, world!"));
 
-        String url = "http://" + container.getHost() + ":" + container.getFirstMappedPort();
-        log.info("URL: {}", url);
-        ResponseEntity<String> response
-                = restTemplate.getForEntity(url + "/uuid", String.class);
-        Assertions.assertEquals(response.getStatusCode(), HttpStatus.OK, () -> "This is not okay.");
-    }
+        }
 
-    @BeforeEach
-    public void beforeEachMethod() {
-
-        log.info("{}In @BeforeEach\nClass instance: {}\nContainer id: {}\n", Constants.EYE_CATCHER, this, container.getContainerId());
-    }
-
-    @AfterEach
-    public void afterEachMethod() {
-
-        log.info("{}In @AfterEach\nClass instance: {}\n", Constants.EYE_CATCHER, this);
-
-        // Get all container logs to since container start to now
-        log.info("{} Container logs:\n{}", Constants.EYE_CATCHER, container.getLogs());
-
-        // Get just the error stream
-        //log.error("{} Container logs:\n{}", Constants.EYE_CATCHER, container.getLogs(STDERR));
     }
 }
-
