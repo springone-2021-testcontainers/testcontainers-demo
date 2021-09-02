@@ -1,0 +1,118 @@
+openapi: 3.0.0
+info:
+  title: message board client
+  version: 1.0.0-oas3
+servers:
+  - url: '{protocol}://localhost:8080'
+    variables:
+      protocol:
+        enum:
+          - http
+          - https
+        default: http
+tags:
+  - name: "MessageBoard"
+    description: "A place to share"
+paths:
+  /message:
+    post:
+      operationId: createMessage
+      x-contracts:
+      - contractId: 1
+        name: Should add the message
+      - contractId: 2
+        name: Should not add the message
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMessage'
+        description: Created message object
+        required: true
+        x-contracts:
+        - contractId: 1
+          body:
+            username: "Dani_Rojas"
+            text: "Football is life!"
+          headers:
+            Content-Type: application/json
+        - contractId: 2
+          body:
+            username: "andy"
+            text: "I am here!"
+          headers:
+            Content-Type: application/json
+      responses:
+        "200":
+          description: Message added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+          x-contracts:
+          - contractId: 1
+            body:
+              status: "Success"
+              operation: "Create"
+              parameter: "1"
+            headers:
+              Content-Type: application/json
+          - contractId: 2
+            body:
+              status: "Failure: Name format must be First_Last"
+              operation: "Create"
+              parameter: "0"
+            headers:
+              Content-Type: application/json
+
+    get:
+      operationId: getMessage
+      x-contracts:
+      - contractId: 1
+        name: Should return all messages
+      responses:
+        "200":
+          description: Messages retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Message'
+
+          x-contracts:
+          - contractId: 1
+            body:
+            - id: 1
+              username: "Dani_Rojas"
+              text: "Football is life!"
+            headers:
+              Content-Type: application/json
+components:
+  schemas:
+    CreateMessage:
+      type: object
+      properties:
+        username:
+          type: string
+        text:
+          type: string
+    Message:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        username:
+          type: string
+        text:
+          type: string
+    ApiResponse:
+      type: object
+      properties:
+        operation:
+          type: string
+        status:
+          type: string
+        parameter:
+          type: string
