@@ -1,6 +1,6 @@
 # testcontainers-demo
 
-This repo is intended for demonstrating and exporing Testcontainers functionality.
+This repo is intended for demonstrating and exploring Testcontainers functionality.
 Run tests individually and examine their behavior.
 
 To run a given test, edit the following command as appropriate:
