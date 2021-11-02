@@ -82,7 +82,6 @@ public class Demo2_Toxiproxy_Tst {
     }
 
     @Test
-    @Order(1)
     void getMessagesSucceeds() {
 
         proxy.setConnectionCut(false);
@@ -99,7 +98,6 @@ public class Demo2_Toxiproxy_Tst {
     }
 
     @Test
-    @Order(2)
     void getMessagesSucceedsWithLatency() throws IOException {
 
         Latency latency = proxy.toxics()
@@ -125,7 +123,6 @@ public class Demo2_Toxiproxy_Tst {
 
 
     @Test
-    @Order(3)
     void getMessagesWhenConnectionHasBeenCut() {
         // Connection Pool is already in place let's wait to make sure
         // that all open sockets are closed otherwise the timeout is minutes long!!
