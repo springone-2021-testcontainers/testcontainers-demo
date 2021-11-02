@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.startupcheck.OneShotStartupCheckStrategy;
@@ -25,6 +26,7 @@ import static org.testcontainers.containers.output.OutputFrame.OutputType.STDOUT
 @Testcontainers
 @Slf4j
 @SpringBootTest
+@ActiveProfiles("test")
 public class Demo5_ContainerLogsTest {
 
     private static GenericContainer<?> shortLivedContainer() {
