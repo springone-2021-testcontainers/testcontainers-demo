@@ -2,6 +2,8 @@ package com.example.testcontainersdemo.messageboardservice;
 
 import com.example.testcontainersdemo.Message;
 import eu.rekawek.toxiproxy.model.ToxicDirection;
+import eu.rekawek.toxiproxy.model.toxic.Latency;
+import org.junit.Ignore;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +13,10 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.web.client.RestClientException;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.ToxiproxyContainer;
@@ -25,6 +29,7 @@ import java.time.Instant;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Testcontainers
 //@SpringBootTest(properties = "spring.sql.init.mode=always", webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -97,22 +102,27 @@ public class Demo2_Toxiproxy_Tst {
     @Order(2)
     void getMessagesSucceedsWithLatency() throws IOException {
 
-        proxy.toxics()
-                .latency("latency", ToxicDirection.DOWNSTREAM, 1000);
+        Latency latency = proxy.toxics()
+                .latency("latency", ToxicDirection.DOWNSTREAM, 1_000)
+                .setJitter(500);
 
         var ptr = new ParameterizedTypeReference<List<Message>>() {
         };
 
         Instant start = Instant.now();
-        var exchange =
-                this.testRestTemplate.exchange("/message", HttpMethod.GET, null, ptr);
+        for (int i = 0; i < 10; i++) {
+            
+            var exchange =
+                    this.testRestTemplate.exchange("/message", HttpMethod.GET, null, ptr);
 
-        assertThat(exchange.getStatusCode()).isEqualTo(HttpStatus.OK);
-        List<Message> messageList = exchange.getBody();
-        Message message = messageList.get(0);
-        assertThat(message.getUsername()).isEqualTo("Dani_Rojas");
-        assertThat(message.getText()).isEqualTo("Football is life!");
+            assertThat(exchange.getStatusCode()).isEqualTo(HttpStatus.OK);
+            List<Message> messageList = exchange.getBody();
+            Message message = messageList.get(0);
+            assertThat(message.getUsername()).isEqualTo("Dani_Rojas");
+            assertThat(message.getText()).isEqualTo("Football is life!");
+        }
     }
+
 
     @Test
     @Order(3)
@@ -124,17 +134,22 @@ public class Demo2_Toxiproxy_Tst {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        proxy.setConnectionCut(true);
         var ptr = new ParameterizedTypeReference<List<Message>>() {
         };
+
+        proxy.setConnectionCut(true);
+        assertThrows(RestClientException.class, () -> {
+            this.testRestTemplate.exchange("/message", HttpMethod.GET, null, ptr);
+        });
+        proxy.setConnectionCut(false);
+
         var exchange =
                 this.testRestTemplate.exchange("/message", HttpMethod.GET, null, ptr);
-
         assertThat(exchange.getStatusCode()).isEqualTo(HttpStatus.OK);
+
         List<Message> messageList = exchange.getBody();
         Message message = messageList.get(0);
         assertThat(message.getUsername()).isEqualTo("Dani_Rojas");
         assertThat(message.getText()).isEqualTo("Football is life!");
     }
-
 }

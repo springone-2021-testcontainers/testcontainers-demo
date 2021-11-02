@@ -10,7 +10,7 @@ socat TCP-LISTEN:2375,reuseaddr,fork UNIX-CONNECT:/var/run/docker.sock &
 #telnet ${DOCKER_HOST_IP} 2375
 
 pack build springone-message-board \
-    -e BP_MAVEN_BUILD_ARGUMENTS='package'  \
+    -e BP_MAVEN_BUILD_ARGUMENTS='-Dtest=Demo2_Toxiproxy_Tst test package'  \
     -e DOCKER_HOST=tcp://${DOCKER_HOST_IP}:2375
 
 pkill socat
