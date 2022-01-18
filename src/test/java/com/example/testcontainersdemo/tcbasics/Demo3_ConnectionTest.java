@@ -20,8 +20,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
 @Slf4j
-@SpringBootTest
-@ActiveProfiles("test")
 public class Demo3_ConnectionTest {
 
     RestTemplate restTemplate = new RestTemplate();
@@ -38,6 +36,7 @@ public class Demo3_ConnectionTest {
         log.info("URL: {}", url);
         ResponseEntity<String> response
                 = restTemplate.getForEntity(url + "/uuid", String.class);
+        log.info("Response: {}", response.getBody());
         Assertions.assertEquals(response.getStatusCode(), HttpStatus.OK, () -> "This is not okay.");
     }
 
@@ -49,6 +48,7 @@ public class Demo3_ConnectionTest {
         log.info("URL: {}", url);
         ResponseEntity<String> response
                 = restTemplate.getForEntity(url + "/uuid", String.class);
+        log.info("Response: {}", response.getBody());
         Assertions.assertEquals(response.getStatusCode(), HttpStatus.OK, () -> "This is not okay.");
     }
 

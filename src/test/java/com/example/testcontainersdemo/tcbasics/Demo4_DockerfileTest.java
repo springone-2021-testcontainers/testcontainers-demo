@@ -37,8 +37,6 @@ import java.util.stream.Stream;
 
 @Testcontainers
 @Slf4j
-@SpringBootTest
-@ActiveProfiles("test")
 public class Demo4_DockerfileTest {
 
     RestTemplate restTemplate = new RestTemplate();

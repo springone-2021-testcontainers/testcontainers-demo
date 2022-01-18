@@ -25,8 +25,6 @@ import static org.testcontainers.containers.output.OutputFrame.OutputType.STDOUT
 
 @Testcontainers
 @Slf4j
-@SpringBootTest
-@ActiveProfiles("test")
 public class Demo5_ContainerLogsTest {
 
     private static GenericContainer<?> shortLivedContainer() {
